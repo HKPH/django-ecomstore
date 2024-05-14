@@ -1,0 +1,48 @@
+python manage.py runserver
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+book: 
+clothes: 
+mobiles: 
+python manage.py runserver 8001
+
+cart: 
+python manage.py runserver 8004
+
+payment: 
+python manage.py runserver 8005
+
+search: 
+python manage.py runserver 8006
+
+shipment: 
+python manage.py runserver 8007
+
+user: 
+python manage.py runserver 8003
+
+order: 
+python manage.py runserver 8002
+thêm id (thêm sản phẩm)
+    id = models.BigIntegerField(primary_key=True)
+
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.id = random_id(CartItem)
+        super().save(*args, **kwargs)
+        
+def random_id(module):
+    id_list = module.objects.values_list('id', flat=True)
+    while True:
+        id = random.randint(1, 1_000_000_000)
+        if id not in id_list:
+            break
+    return id
+
+chỉnh cổng port
+    from django.core.management.commands.runserver import Command as runserver
+    runserver.default_port="8002"
+
+sửa database

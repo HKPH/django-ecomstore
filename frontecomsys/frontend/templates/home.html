@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        header {
+            background-color: #f0f0f0;
+            padding: 20px 0;
+        }
+        
+        header h1 {
+            margin: 0;
+        }
+        
+        .navigation {
+            display: flex;
+            align-items: center;
+        }
+        
+        .navigation form {
+            margin-right: 20px;
+        }
+        
+        .navigation input[type="text"] {
+            padding: 8px;
+            width: 200px;
+        }
+        
+        .navigation button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .navigation button:hover {
+            background-color: #0056b3;
+        }
+        
+        .navigation a {
+            margin-left: 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navigation img {
+            width: 32px;
+            height: 32px;
+            margin-left: 5px;
+        }
+        
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .navbar a {
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+        
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        
+        .navbar a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        main {
+            margin: 20px auto;
+        }
+        
+        .section-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        
+        section {
+            flex: 0 1 calc(30% - 20px);
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        section h2 {
+            margin-top: 0;
+        }
+        
+        section ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        
+        section li {
+            width: calc(33.33% - 10px);
+            height: 500px; /* Fixed height for rectangle shape */
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 15px;
+            box-sizing: border-box;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between; /* Distribute space */
+        }
+        
+        section h3 {
+            font-size: 16px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        
+        section img {
+            width: 150px; /* Fixed width for images */
+            height: 200px; /* Fixed height for images */
+            object-fit: cover;
+            margin-bottom: 5px;
+        }
+        
+        section p {
+            margin: 0;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        section button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 14px;
+            width: 100%;
+        }
+        
+        section button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Trang chủ</h1>
+            <div class="navigation">
+                <form id="searchForm" action="{% url 'search' %}" method="GET">
+                    <input type="text" id="searchInput" name="q" placeholder="Tìm kiếm...">
+                    <button type="submit">Tìm kiếm</button>
+                </form>
+                <button id="voiceSearchButton"><i class="fas fa-microphone"></i></button>
+                <a href="/cart"><i class="fas fa-cart-shopping"></i></a>
+                <a href="/profile"><i class="fas fa-user"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <div class="navbar">
+        <a class="active" href="#">Trang chủ</a>
+        <a href="#">Sách</a>
+        <a href="#">Quần áo</a>
+        <a href="#">Điện thoại</a>
+    </div>
+    <main>
+        <section>
+            <h2>Sách</h2>
+            <ul>
+                {% for book in books %}
+                <li>
+                    <h3>{{ book.title }}</h3>
+                    <img src="{{ book.image }}" alt="{{ book.title }}">
+                    <p>{{ book.description }}</p>
+                    <p>Giá tiền: {{ book.price }}</p>
+                    <form action="{% url 'add_to_cart' %}" method="POST" class="add-to-cart-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_type" value="books">
+                        <input type="hidden" name="product_id" value="{{ book.id }}">
+                        <input type="hidden" name="price" value="{{ book.price }}">
+                        <button type="submit">Thêm</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        
+        <section>
+            <h2>Quần áo</h2>
+            <ul>
+                {% for cloth in clothes %}
+                <li>
+                    <h3>{{ cloth.name }}</h3>
+                    <img src="{{ cloth.image }}" alt="{{ cloth.name }}">
+                    <p>{{ cloth.description }}</p>
+                    <p>Giá tiền: {{ cloth.price }}</p>
+                    <form action="{% url 'add_to_cart' %}" method="POST" class="add-to-cart-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_type" value="clothes">
+                        <input type="hidden" name="product_id" value="{{ cloth.id }}">
+                        <input type="hidden" name="price" value="{{ cloth.price }}">
+                        <button type="submit">Thêm vào giỏ hàng</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        
+        <section>
+            <h2>Điện thoại</h2>
+            <ul>
+                {% for mobile in mobiles %}
+                <li>
+                    <h3>{{ mobile.name }}</h3>
+                    <img src="{{ mobile.image }}" alt="{{ mobile.name }}">
+                    <p>{{ mobile.description }}</p>
+                    <p>Giá tiền: {{ mobile.price }}</p>
+                    <form action="{% url 'add_to_cart' %}" method="POST" class="add-to-cart-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_type" value="mobiles">
+                        <input type="hidden" name="product_id" value="{{ mobile.id }}">
+                        <input type="hidden" name="price" value="{{ mobile.price }}">
+                        <button type="submit">Thêm vào giỏ hàng</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const addToCartForms = document.querySelectorAll('.add-to-cart-form');
+            addToCartForms.forEach(form => {
+                form.addEventListener('submit', async function (event) {
+                    event.preventDefault();
+                    const formData = new FormData(this);
+                    const url = this.action;
+                    const options = {
+                        method: 'POST',
+                        body: formData,
+                    };
+                    try {
+                        const response = await fetch(url, options);
+                        if (response.status === 201) {
+                            alert('Sản phẩm đã được thêm vào giỏ hàng.');
+                        } else {
+                            const error = await response.json();
+                            const errorMessage = error.message || 'Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.';
+                            alert(errorMessage);
+                        }
+                    } catch (error) {
+                        console.error('Đã xảy ra lỗi:', error);
+                    }
+                });
+            });
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const voiceSearchButton = document.getElementById('voiceSearchButton');
+    
+            voiceSearchButton.addEventListener('click', async function () {
+                try {
+                    const recognition = new webkitSpeechRecognition();
+                    recognition.lang = 'vi-VN';
+    
+                    recognition.onresult = function (event) {
+                        const transcript = event.results[0][0].transcript;
+                        searchInput.value = transcript;
+                        searchForm.submit();
+                    };
+    
+                    recognition.start();
+                } catch (error) {
+                    console.error('Lỗi khi khởi động nhận dạng giọng nói:', error);
+                    alert('Trình duyệt không hỗ trợ tính năng này.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

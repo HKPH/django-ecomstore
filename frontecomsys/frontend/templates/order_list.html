@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Order List</h1>
+        {% if orders %}
+            <ul>
+                {% for order in orders %}
+                    <li>
+                        <p>Total Price: {{ order.total_price }}</p>
+                        <p>Status: {{ order.status }}</p>
+                        <h3>Items:</h3>
+                        <ul>
+                            {% for item in order.items %}
+                                <li>
+                                    <h5 class="card-title">
+                                        {% if item.product_type == 'books' %}
+                                            {{ item.title }}
+                                        {% elif item.product_type == 'clothes' %}
+                                            {{ item.name }}
+                                        {% elif item.product_type == 'mobiles' %}
+                                            {{ item.name }}
+                                        {% endif %}
+                                    </h5>
+                                    <p>Price: {{ item.price }}</p>
+                                    <p>Quantity: {{ item.quantity }}</p>
+                                    <img src="{{ item.image }}" alt="{{ item.title }}" style="max-width: 100px;">
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No orders found.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
