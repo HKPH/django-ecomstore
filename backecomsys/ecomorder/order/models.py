@@ -1,5 +1,7 @@
 from django.db import models
 import random
+from datetime import datetime
+
 class Order(models.Model):
     id = models.BigIntegerField(primary_key=True)
     user_id = models.PositiveIntegerField()
@@ -10,6 +12,7 @@ class Order(models.Model):
         if not self.id:
             self.id = random_id(Order)
         super().save(*args, **kwargs)
+
         
 
 class OrderItem(models.Model):

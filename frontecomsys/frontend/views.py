@@ -269,11 +269,15 @@ class OrderListView(TemplateView):
 
             for order in orders:
                 order_items = order.get('items', [])
+                order_datetime = order.get('order_datetime')
+                if order_datetime:
+                    time = order_datetime[:10]
+                    order['order_datetime'] = time
                 for item in order_items:
                     product_type = item.get('product_type')
                     product_id = item.get('product_id')
 
-                    product_api_url = f'http://127.0.0.1:8002/api/{product_type}/{product_id}/'
+                    product_api_url = f'http://127.0.0.1:8001/api/{product_type}/{product_id}/'
                     product_response = requests.get(product_api_url)
 
                     if product_response.status_code == 200:
@@ -281,7 +285,6 @@ class OrderListView(TemplateView):
                         item.update(product_data)
                         context['orders'].append(order)
         print(context)
-
         return context
 
     
