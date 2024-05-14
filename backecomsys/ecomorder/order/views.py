@@ -6,21 +6,23 @@ from rest_framework import status
 from .models import Order, OrderItem
 from .serializers import OrderSerializer, OrderItemSerializer
 import requests
-
-class CreateOrderAPIView(APIView):
+from decimal import Decimal
+class CreateOrderView(APIView):
     def post(self, request, format=None):
+        print(request.data)
         user_id = request.data.get('userId')
-        # shipment_data = request.data.get('shipment')
+        shipment_data = request.data.get('shipment')
         payment_data = request.data.get('payment')
-       
+
         cart_response = requests.get(f'http://localhost:8004/api/cart/get_cart/{user_id}/')
         
     
         if cart_response.status_code != status.HTTP_200_OK:
             return Response({"error": "Không thể lấy giỏ hàng của người dùng."}, status=cart_response.status_code)
         
-        cart_data = cart_response.json()
-        cart_items = cart_data.get('items', [])
+        cart_items = cart_response.json()
+        print(cart_items)
+
         
         if not cart_items:
             return Response({"error": "Giỏ hàng của bạn đang trống."}, status=status.HTTP_400_BAD_REQUEST)
@@ -49,20 +51,14 @@ class CreateOrderAPIView(APIView):
             
         order_id=order.id
         shipment_fee = calculate_shipment_fee(order.items.all())
-        user_address=""
-        user_response = requests.get(f'http://localhost:8003/api/user/{user_id}/')
-        if user_response.status_code == status.HTTP_200_OK:
-            user_data = user_response.json()
-            user_address = user_data.get('address')
-        else:
-            user_address = "Địa chỉ không khả dụng"
+        user_address=shipment_data
         create_shipment(order_id,user_address,shipment_fee)
-        total_price = sum(cart_item.get('price') * cart_item.get('quantity') for cart_item in cart_items) + shipment_fee
+        total_price = Decimal(sum(Decimal(cart_item.get('price')) * cart_item.get('quantity') for cart_item in cart_items)) + shipment_fee
         order.total_price = total_price
         order.save()
-        create_shipment(order_id,total_price,payment_data.get('method')  )
+        create_payment(order_id,total_price,payment_data)
         
-        requests.delete(f'http://localhost:8004/api/cart/delete/{cart_data.get("id")}/')
+        requests.delete(f'http://localhost:8004/api/cart/delete/{user_id}/')
 
         return Response({"success": "Đã tạo đơn hàng thành công."}, status=status.HTTP_201_CREATED)
 def create_payment(order_id, amount, payment_method):

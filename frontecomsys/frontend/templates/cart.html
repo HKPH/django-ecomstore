@@ -46,8 +46,20 @@
             padding: 20px;
         }
         
-        .btn {
-            margin-top: 10px;
+        .quantity-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantity-actions input[type="number"] {
+            height: 38px;
+            width: 60px;
+            text-align: center;
+        }
+        
+        .quantity-actions button {
+            height: 38px;
         }
         
         .total-price {
@@ -98,15 +110,15 @@
                                             {% endif %}
                                         </h5>
                                         <p class="card-text">Price: {{ item.price }}</p>
-                                        <p class="card-text">Quantity: 
+                                        <div class="card-text quantity-actions">
                                             <input type="number" name="quantity" value="{{ item.quantity }}" min="0">
                                             <input type="hidden" name="user_id" value="{{ item.user_id }}">
                                             <input type="hidden" name="product_type" value="{{ item.product_type }}">
                                             <input type="hidden" name="product_id" value="{{ item.id }}">
-                                            <button type="submit" name="action" value="add" class="btn btn-primary mr-2">+</button>
-                                            <button type="submit" name="action" value="remove" class="btn btn-danger mr-2">-</button>
+                                            <button type="submit" name="action" value="add" class="btn btn-primary">+</button>
+                                            <button type="submit" name="action" value="remove" class="btn btn-danger">-</button>
                                             <button type="submit" name="action" value="removeAll" class="btn btn-danger">Xóa</button>
-                                        </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

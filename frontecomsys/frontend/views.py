@@ -133,7 +133,7 @@ class AddToCartView(TemplateView):
         product_type = request.POST.get('product_type')
         product_id = request.POST.get('product_id')
         price = request.POST.get('price')
-        api_url = 'http://127.0.0.1:8004/api/add_to_cart/'
+        api_url = 'http://127.0.0.1:8004/api/cart/add_to_cart/'
         data = {
             'user_id': user_id,
             'product_type': product_type,
@@ -162,30 +162,30 @@ class CartView(TemplateView):
             cart_items = response.json()
 
             total_price = 0
-            for item in cart_items:
-                product_type = item.get('product_type')
-                product_id = item.get('product_id')
+            if cart_items:
+                for item in cart_items:
+                    product_type = item.get('product_type')
+                    product_id = item.get('product_id')
 
-                product_api_url = f'http://127.0.0.1:8001/api/{product_type}/{product_id}/'
-                product_response = requests.get(product_api_url)
+                    product_api_url = f'http://127.0.0.1:8001/api/{product_type}/{product_id}/'
+                    product_response = requests.get(product_api_url)
 
-                if product_response.status_code == 200:
-                    product_data = product_response.json()
-                    item.update(product_data)
+                    if product_response.status_code == 200:
+                        product_data = product_response.json()
+                        item.update(product_data)
 
-                    price = float(item.get('price'))
-                    quantity = int(item.get('quantity'))
-                    item_total = price * quantity
-                    total_price += item_total  
+                        price = float(item.get('price'))
+                        quantity = int(item.get('quantity'))
+                        item_total = price * quantity
+                        total_price += item_total  
 
             context['cart_items'] = cart_items
             context['total_price'] = total_price 
-            
-   
         else:
             context['error'] = 'Failed to fetch cart items'
 
         return context
+
     def post(self, request, *args, **kwargs):
         form = request.POST
         user_id = self.request.session.get('userId')  
@@ -237,14 +237,10 @@ class CreateOrderView(TemplateView):
         if not user_id:
             return render(request, self.template_name, {"error": "Bạn cần đăng nhập để tạo đơn hàng."})
 
-        response = requests.post('http://127.0.0.1:8009/api/orders/create', json={
+        response = requests.post('http://127.0.0.1:8002/api/orders/create/', json={
             'userId': user_id,
-            'shipment': {
-                'address': address
-            },
-            'payment': {
-                'method': payment_method
-            }
+            'shipment': address,
+            'payment': payment_method
         })
 
         if response.status_code == 201:
@@ -257,7 +253,6 @@ class CreateOrderView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         return context
 
 class OrderListView(TemplateView):
@@ -266,7 +261,7 @@ class OrderListView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user_id = self.request.session.get('userId')  
-        order_api_url = f'http://127.0.0.1:8009/api/order/{user_id}/'
+        order_api_url = f'http://127.0.0.1:8002/api/order/{user_id}/'
         response = requests.get(order_api_url)
         if response.status_code == 200:
             orders = response.json()
@@ -278,7 +273,7 @@ class OrderListView(TemplateView):
                     product_type = item.get('product_type')
                     product_id = item.get('product_id')
 
-                    product_api_url = f'http://127.0.0.1:8009/api/{product_type}/{product_id}/'
+                    product_api_url = f'http://127.0.0.1:8002/api/{product_type}/{product_id}/'
                     product_response = requests.get(product_api_url)
 
                     if product_response.status_code == 200:

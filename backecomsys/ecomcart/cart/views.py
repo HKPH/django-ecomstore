@@ -86,10 +86,10 @@ class GetCartByUserId(APIView):
         
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-class DeleteCartById(APIView):
-    def delete(self, request, cart_id):
+class DeleteCartByUserId(APIView):
+    def delete(self, request, user_id):
         try:
-            cart = Cart.objects.get(id=cart_id)
+            cart = Cart.objects.get(user_id=user_id)
             cart.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Cart.DoesNotExist:
