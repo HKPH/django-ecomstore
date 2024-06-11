@@ -13,12 +13,12 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
         }
 
-        .order {
+        .order-table {
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -26,36 +26,13 @@
             margin-bottom: 20px;
         }
 
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
+        .table th, .table td {
+            vertical-align: middle;
         }
 
-        .order-info {
-            flex-grow: 1;
-            margin-right: 20px;
-        }
-
-        .order-items {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .item {
-            margin-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-        }
-
-        .item img {
-            max-width: 100px;
+        .table img {
+            max-width: 80px;
             height: auto;
-            margin-top: 5px;
         }
     </style>
 </head>
@@ -64,34 +41,44 @@
         <h2 class="text-center mb-4">Order List</h2>
         {% if orders %}
             {% for order in orders %}
-                <div class="order">
-                    <div class="order-header">
-                        <div class="order-info">
-                            <p><strong>Total Price:</strong> {{ order.total_price }}</p>
-                            <p><strong>Status:</strong> {{ order.status }}</p>
-                        </div>
-                        <div class="order-date">
-                            <p><strong>Date:</strong> {{ order.order_datetime }}</p>
-                        </div>
+                <div class="order-table">
+                    <div class="mb-3">
+                        <p><strong>Total Price:</strong> {{ order.total_price }}</p>
+                        <p><strong>Status:</strong> {{ order.status }}</p>
+                        <p><strong>Date:</strong> {{ order.order_datetime }}</p>
                     </div>
-                    <ul class="order-items">
-                        {% for item in order.items %}
-                            <li class="item">
-                                <h4>
-                                    {% if item.product_type == 'books' %}
-                                        {{ item.title }}
-                                    {% elif item.product_type == 'clothes' %}
-                                        {{ item.name }}
-                                    {% elif item.product_type == 'mobiles' %}
-                                        {{ item.name }}
-                                    {% endif %}
-                                </h4>
-                                <p><strong>Price:</strong> {{ item.price }}</p>
-                                <p><strong>Quantity:</strong> {{ item.quantity }}</p>
-                                <img src="{{ item.image }}" alt="{{ item.title }}">
-                            </li>
-                        {% endfor %}
-                    </ul>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Image</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                                <tr>
+                                    <td>
+                                        {% if item.product_type == 'books' %}
+                                            {{ item.title }}
+                                        {% elif item.product_type == 'clothes' %}
+                                            {{ item.name }}
+                                        {% elif item.product_type == 'mobiles' %}
+                                            {{ item.name }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.price }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td><img src="{{ item.image }}" alt="{{ item.title }}"></td>
+                                    <td>
+                                        <a href="{% url 'submit_review' %}?product_type=item.product_type&product_id={{ item.product_id }}">Đánh giá sản phẩm</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             {% endfor %}
         {% else %}

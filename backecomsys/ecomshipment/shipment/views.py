@@ -9,9 +9,6 @@ class CreateShipment(APIView):
         order_id = request.data.get('order_id')
         address = request.data.get('address')
         fee = request.data.get('fee')
-
         shipment = Shipment.objects.create(order_id=order_id, address=address, fee=fee)
-
         serializer = ShipmentSerializer(shipment)
-
         return Response(serializer.data, status=status.HTTP_201_CREATED)

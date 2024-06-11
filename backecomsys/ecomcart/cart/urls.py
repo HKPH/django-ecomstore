@@ -9,7 +9,6 @@ urlpatterns = [
     path('api/cart/remove/', RemoveFromCart.as_view(), name='remove-cart'),
     path('api/cart/get_cart/<int:user_id>/', GetCartByUserId.as_view(), name='get-cart-by-user-id'),
     path('api/cart/delete/<int:user_id>/', DeleteCartByUserId.as_view(), name='delete_cart_by_id'),
-
 ]
 
     

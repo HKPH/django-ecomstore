@@ -6,7 +6,17 @@ from django.contrib import messages
 import requests
 from django.http import JsonResponse
 
-import speech_recognition as sr
+from django.views.generic import TemplateView
+from django.shortcuts import render, reverse, HttpResponseRedirect
+from django.contrib import messages
+import requests
+
+from django.views.generic import TemplateView
+from django.shortcuts import render, reverse
+from django.http import HttpResponseRedirect
+from django.contrib import messages
+import requests
+
 class RegistrationView(TemplateView):
     template_name = 'registration.html'
 
@@ -14,12 +24,13 @@ class RegistrationView(TemplateView):
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
+        phone_number = request.POST.get('phone_number')  
 
- 
         response = requests.post('http://127.0.0.1:8003/api/register/', data={
             'username': username,
             'email': email,
-            'password': password
+            'password': password,
+            'phone_number': phone_number  
         })
 
         if response.status_code == 201:
@@ -30,26 +41,80 @@ class RegistrationView(TemplateView):
             messages.error(request, error_message)
             return render(request, self.template_name)
 
+
+
 class LoginView(TemplateView):
     template_name = 'login.html'
 
     def post(self, request):
         username = request.POST.get('username')
         password = request.POST.get('password')
-        response = requests.post('http://127.0.0.1:8003/api/login/', data={
+
+        response = requests.post('http://127.0.0.1:8003/api/login/', json={
             'username': username,
             'password': password
         })
+
         if response.status_code == 200:
             messages.success(request, 'Đăng nhập thành công.')
             user_data = response.json()
-            userId = user_data.get('id')
-            request.session['userId'] = userId
+            user_id = user_data.get('id')
+            request.session['user_id'] = user_id
             return HttpResponseRedirect(reverse('home'))
         else:
             error_message = response.json().get('error', 'Đã xảy ra lỗi khi đăng nhập.')
             messages.error(request, error_message)
             return render(request, self.template_name)
+
+class UserProfileView(TemplateView):
+    template_name = 'user_profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_id = self.request.session.get('user_id')
+        if user_id:
+            response = requests.get(f'http://127.0.0.1:8003/api/users/{user_id}/')
+            if response.status_code == 200:
+                context['user'] = response.json()
+        print(context['user'])
+        return context
+
+    def post(self, request):
+        user_id = self.request.session.get('user_id')
+        address_data = request.POST.get('address')
+        address_parts = address_data.split(' ')
+        fullname_data = request.POST.get('fullname')
+        fullname_parts = fullname_data.split(' ')
+        if user_id:
+            data = {
+                'birthday': request.POST.get('birthday'),
+                'email': request.POST.get('email'),
+                'phone_number': request.POST.get('phone_number'),
+                'full_name': {
+                    'first_name': fullname_parts[0].strip(),
+                    'last_name': fullname_parts[1].strip()
+                },
+                'address': {
+                    'street': address_parts[0].strip(),
+                    'city': address_parts[1].strip(),
+                    'state': address_parts[2].strip(),
+                    'country': address_parts[3].strip(),
+                },
+                'account': {
+                    'username': request.POST.get('username'),
+                    'password': request.POST.get('password')
+                }
+            }
+
+            response = requests.put(f'http://127.0.0.1:8003/api/users/{user_id}/', json=data)
+            if response.status_code == 200:
+                messages.success(request, 'User information has been updated successfully.')
+            else:
+                error_message = response.json().get('error', 'An error occurred while updating user information.')
+                messages.error(request, error_message)
+        
+        # Redirect to the user profile page after updating the information
+        return HttpResponseRedirect(reverse('user_profile'))
 
 class HomeView(TemplateView):
     template_name = 'home.html'
@@ -93,36 +158,7 @@ class SearchView(TemplateView):
 
         return context
 
-class UserProfileView(TemplateView):
-    template_name = 'user_profile.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_id = self.request.session.get('userId')
-        if user_id:
-            response = requests.get(f'http://127.0.0.1:8003/api/users/{user_id}/')
-            if response.status_code == 200:
-                context['user'] = response.json()
-        return context
-
-    def post(self, request):
-        user_id = self.request.session.get('userId')
-        if user_id:
-            data = {
-                'username': request.POST.get('username'),
-                'password': request.POST.get('password'),
-                'birthday': request.POST.get('birthday'),
-                'email': request.POST.get('email'),
-                'phone_number': request.POST.get('phone_number'),
-                'address': request.POST.get('address')
-            }
-            response = requests.put(f'http://127.0.0.1:8003/api/users/{user_id}/', data=data)
-            if response.status_code == 200:
-                messages.success(request, 'Thông tin người dùng đã được cập nhật.')
-            else:
-                error_message = response.json().get('error', 'Đã xảy ra lỗi khi cập nhật thông tin người dùng.')
-                messages.error(request, error_message)
-        return HttpResponseRedirect(reverse('user_profile'))
 
 
 from django.http import JsonResponse
@@ -299,3 +335,62 @@ class CartItemForm(forms.Form):
     product_id = forms.IntegerField()
     action = forms.CharField(max_length=10)
 
+from django.views.generic import TemplateView
+from django.http import HttpResponseRedirect, HttpResponse
+import requests
+
+class CreateReviewView(TemplateView):
+    template_name = 'create_review.html'
+
+    def post(self, request, *args, **kwargs):
+        product_id = request.POST.get('product_id')
+        product_type = request.POST.get('product_type')
+        star = request.POST.get('star')
+        comment = request.POST.get('comment')
+
+        api_url = 'http://127.0.0.1:8008/api/create-review/'
+        data = {
+            'product_id': product_id,
+            'product_type': product_type,
+            'star': star,
+            'comment': comment
+        }
+        print(data)
+        response = requests.post(api_url, data=data)
+        if response.status_code == 201:
+            # Đánh giá đã được tạo thành công
+            return HttpResponseRedirect('/')
+        else:
+            # Xử lý lỗi nếu cần
+            return HttpResponse("Đã xảy ra lỗi khi tạo đánh giá")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['product_id'] = self.request.GET.get('product_id')
+        context['product_type'] = self.request.GET.get('product_type')
+        return context
+import requests
+from django.views.generic import TemplateView
+from django.conf import settings
+
+class ProductReviewView(TemplateView):
+    template_name = 'product_reviews.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product_id = self.kwargs['product_id']
+        product_type = self.kwargs['product_type']
+        
+        api_url = f'http://127.0.0.1:8008/api/get-review/{product_id}/{product_type}/'
+        response = requests.get(api_url)
+        
+        if response.status_code == 200:
+            reviews = response.json()
+        else:
+            reviews = []
+
+        context['reviews'] = reviews
+        context['product_id'] = product_id
+        context['product_type'] = product_type
+        print(context)
+        return context

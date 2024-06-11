@@ -11,7 +11,6 @@ class Author(models.Model):
         if not self.id:
             self.id = random_id(Author)
         super().save(*args, **kwargs)
-
 class Publisher(models.Model):
     id = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=255)
@@ -21,7 +20,6 @@ class Publisher(models.Model):
         if not self.id:
             self.id = random_id(Publisher)
         super().save(*args, **kwargs)
-
 class Category(models.Model):
     id = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=255)
@@ -29,8 +27,6 @@ class Category(models.Model):
         if not self.id:
             self.id = random_id(Category)
         super().save(*args, **kwargs)
-
-
 class Book(models.Model):
     id = models.BigIntegerField(primary_key=True)
     title = models.CharField(max_length=255)

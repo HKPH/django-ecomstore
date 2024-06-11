@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Đánh Giá</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        .review-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .rating {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            direction: rtl;
+        }
+
+        .rating input {
+            display: none;
+        }
+
+        .rating label {
+            cursor: pointer;
+            font-size: 30px;
+            color: #ccc;
+            transition: color 0.2s;
+        }
+
+        .rating label:hover,
+        .rating label:hover ~ label,
+        .rating input:checked ~ label {
+            color: #ffc107;
+        }
+
+        .rating input:checked ~ label:hover {
+            color: #ffc107;
+        }
+
+        textarea {
+            width: calc(100% - 20px);
+            height: 100px;
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            resize: vertical;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+            width: calc(100% - 20px);
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="review-container">
+        <h1>Tạo Đánh Giá</h1>
+        <form method="POST" action="">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ product_id }}">
+            <input type="hidden" name="product_type" value="{{ product_type }}">
+            <div class="rating">
+                <input type="radio" id="star5" name="star" value="5" required>
+                <label for="star5">&#9733;</label>
+                <input type="radio" id="star4" name="star" value="4">
+                <label for="star4">&#9733;</label>
+                <input type="radio" id="star3" name="star" value="3">
+                <label for="star3">&#9733;</label>
+                <input type="radio" id="star2" name="star" value="2">
+                <label for="star2">&#9733;</label>
+                <input type="radio" id="star1" name="star" value="1">
+                <label for="star1">&#9733;</label>
+            </div>
+            <textarea id="comment" name="comment" placeholder="Nhận xét" required></textarea><br>
+            <button type="submit">Gửi đánh giá</button>
+        </form>
+    </div>
+</body>
+</html>

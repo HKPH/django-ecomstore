@@ -12,9 +12,6 @@ class Order(models.Model):
         if not self.id:
             self.id = random_id(Order)
         super().save(*args, **kwargs)
-
-        
-
 class OrderItem(models.Model):
     id = models.BigIntegerField(primary_key=True)
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)

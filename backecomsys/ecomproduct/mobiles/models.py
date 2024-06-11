@@ -24,9 +24,9 @@ class Mobiles(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     producer = models.ForeignKey(Producer, on_delete=models.CASCADE)
     type = models.ForeignKey(Type, on_delete=models.CASCADE)
-
     description = models.TextField()
     image = models.ImageField(upload_to='mobile_images/')
+    
     def save(self, *args, **kwargs):
         if not self.id:
             self.id = random_id(Mobiles)

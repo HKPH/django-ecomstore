@@ -217,6 +217,8 @@
                         <input type="hidden" name="price" value="{{ book.price }}">
                         <button type="submit">Thêm</button>
                     </form>
+                    <a href="{% url 'product_reviews' product_id=book.id product_type="books" %}" class="btn btn-info btn-sm">Xem đánh giá</a>
+                    <a href="{% url 'submit_review' %}?product_type=books&product_id={{ book.id }}">Đánh giá sản phẩm</a>
                 </li>
                 {% endfor %}
             </ul>
@@ -238,6 +240,8 @@
                         <input type="hidden" name="price" value="{{ cloth.price }}">
                         <button type="submit">Thêm vào giỏ hàng</button>
                     </form>
+                    <a href="{% url 'product_reviews' product_id=cloth.id product_type="clothes" %}" class="btn btn-info btn-sm">Xem đánh giá</a>
+                    <a href="{% url 'submit_review' %}?product_type=clothes&product_id={{ cloth.id }}">Đánh giá sản phẩm</a>
                 </li>
                 {% endfor %}
             </ul>
@@ -259,6 +263,8 @@
                         <input type="hidden" name="price" value="{{ mobile.price }}">
                         <button type="submit">Thêm vào giỏ hàng</button>
                     </form>
+                    <a href="{% url 'product_reviews' product_id=mobile.id product_type="mobiles" %}" class="btn btn-info btn-sm">Xem đánh giá</a>
+                    <a href="{% url 'submit_review' %}?product_type=mobiles&product_id={{ mobile.id }}">Đánh giá sản phẩm</a>
                 </li>
                 {% endfor %}
             </ul>

@@ -24,6 +24,9 @@ python manage.py runserver 8003
 
 order: 
 python manage.py runserver 8002
+
+review:
+python manage.py runserver 8008
 thêm id (thêm sản phẩm)
     id = models.BigIntegerField(primary_key=True)
 
@@ -45,4 +48,26 @@ chỉnh cổng port
     from django.core.management.commands.runserver import Command as runserver
     runserver.default_port="8002"
 
-sửa database
+    'corsheaders',
+    'rest_framework',
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+CORS_ALLOW_ALL_ORIGINS = True
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'cart',
+        'USER': 'root',
+        'PASSWORD': 'phk2002',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}

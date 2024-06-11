@@ -7,15 +7,14 @@ class ProductSearch(APIView):
     def get(self, request):
         category = request.query_params.get('category')
         keyword = request.query_params.get('q')
-        
         if category == 'all':
             book_response = requests.get('http://localhost:8001/api/books/search/', params={'name': keyword})
             books = book_response.json() if book_response.status_code == status.HTTP_200_OK else []
 
-            clothes_response = requests.get('http://localhost:8002/api/clothes/search/', params={'name': keyword})
+            clothes_response = requests.get('http://localhost:8001/api/clothes/search/', params={'name': keyword})
             clothes = clothes_response.json() if clothes_response.status_code == status.HTTP_200_OK else []
 
-            mobiles_response = requests.get('http://localhost:8003/api/mobiles/search/', params={'name': keyword})
+            mobiles_response = requests.get('http://localhost:8001/api/mobiles/search/', params={'name': keyword})
             mobiles = mobiles_response.json() if mobiles_response.status_code == status.HTTP_200_OK else []
 
             if not (books or clothes or mobiles):
@@ -32,7 +31,7 @@ class ProductSearch(APIView):
             return Response(response_data)
         
         elif category in ['books', 'clothes', 'mobiles']:
-            search_response = requests.get(f'http://localhost:{port}/api/{category}/search/', params={'name': keyword})
+            search_response = requests.get(f'http://localhost:8001/api/{category}/search/', params={'name': keyword})
             if search_response.status_code == status.HTTP_200_OK:
                 return Response(search_response.json())
             else:

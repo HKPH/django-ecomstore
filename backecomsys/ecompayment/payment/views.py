@@ -9,9 +9,6 @@ class CreatePayment(APIView):
         order_id = request.data.get('order_id')
         amount=request.data.get('amount')
         payment_method=request.data.get('payment_method')
-
         payment = Payment.objects.create(order_id=order_id, amount=amount, payment_method=payment_method)
-        
         serializer = PaymentSerializer(payment)
-
         return Response(serializer.data, status=status.HTTP_201_CREATED)

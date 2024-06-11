@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Reviews</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .review-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .review-card h5 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .review-card p {
+            margin-bottom: 5px;
+        }
+
+        .star-rating {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center mb-4">Đánh Giá Sản Phẩm</h2>
+        {% if reviews %}
+            {% for review in reviews %}
+                <div class="review-card">
+                    <div class="star-rating" data-rating="{{ review.star }}">
+                        <!-- Stars will be inserted here by JavaScript -->
+                    </div>
+                    <p><strong>Nhận xét:</strong> {{ review.comment }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center">Chưa có đánh giá nào cho sản phẩm này.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const starContainers = document.querySelectorAll('.star-rating');
+            starContainers.forEach(container => {
+                const rating = parseInt(container.getAttribute('data-rating'));
+                container.innerHTML = getStars(rating);
+            });
+
+            function getStars(rating) {
+                let stars = '';
+                for (let i = 0; i < rating; i++) {
+                    stars += '&#9733;'; // filled star
+                }
+                for (let i = rating; i < 5; i++) {
+                    stars += '&#9734;'; // empty star
+                }
+                return stars;
+            }
+        });
+    </script>
+</body>
+</html>

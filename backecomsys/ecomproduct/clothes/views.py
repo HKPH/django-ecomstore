@@ -15,7 +15,6 @@ class ClothesById(APIView):
             return Clothes.objects.get(pk=pk)
         except Clothes.DoesNotExist:
             return None
-
     def get(self, request, pk):
         clothes = self.get_object(pk)
         if clothes is not None:
@@ -23,7 +22,6 @@ class ClothesById(APIView):
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
 class ClothesSearchByName(APIView):
     def get(self, request, format=None):
         query = request.query_params.get('name', '')
